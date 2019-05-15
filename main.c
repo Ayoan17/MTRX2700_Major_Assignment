@@ -7,7 +7,6 @@
 #define THRESHOLD 15
 
 unsigned int abs(int);
-void delay(long int);
 void initSevenSeg(int);
 void intToPrint(int);
 interrupt 10 void multiplex();
@@ -34,7 +33,7 @@ void main(void) {
       int range = getRange(SMPL)/SMPL;
       int dif = abs(range - lastRange);
       lastRange = range;
-
+       delay(100);
        if(dif > THRESHOLD){
           direction += 5;
           stepServo(size, direction%8);
@@ -54,11 +53,6 @@ unsigned int abs(int num){
  }
 }
 
-//Basic Delay
-void delay(long int time){
-   while(time-->0);{
-   }
-}
 
 //Initiates seven segment display
 void initSevenSeg(int refreshRate){
