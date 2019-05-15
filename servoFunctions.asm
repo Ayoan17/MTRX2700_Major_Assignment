@@ -4,9 +4,9 @@
 
  initServos:
     bset DDRP, #%10100000                ;Set PWM outputs
-    movb #%10100000, PWMPOL        ;Set Duty Cycle High for pwm7-4
+    movb #%10100000, PWMPOL        ;Set Duty Cycle High for pwm 7 5
     movb #%11000000, PWMCTL        ;Concatenate 6-7 and 4-5
-
+    
     movb #$44, PWMPRCLK                ; Set prescaler to 16 for clockA and clockB
     movw #30000, PWMPER67           ; Set period: 24,000,000/50/16 = 30,000
     movw #30000, PWMPER45
@@ -16,15 +16,19 @@
     std PWMDTY67
     ldy #30
 
+    movb #%10100000, PWME              ;Enable Chanels 7 5
     loop30:
     ldx #$FFFF
     dbne X, *
     dbne Y, loop30
+    bclr DDRP, #%1010000
+    clr PWME
     rts
 
- stepServo:
 
-    movb #%10100000, PWME              ;Enable Chanels 7-4                                                                                                            ;cg - 2
+
+
+ stepServo:                                                                                                      ;cg - 2
     bitb   #1
     beq one_motion                                                                                          ;cg - 4
         ;If bit(0) == 1 then set A = 0b11001100                                                 ;c1 - 1
@@ -62,7 +66,7 @@
     ldd PWMDTY67
     addd 3, SP
     std PWMDTY67
-    
+
     case_up:
     brclr SP, #%00000001, return
     ldd PWMDTY45
@@ -70,13 +74,19 @@
     std PWMDTY45
     return:
     pula
-
+   ;bclr PWMCTL, #%00001100
+    movb #%10100000, PWME              ;Enable Chanels 7-4
+    bset DDRP, #%1010000
     ldd 2, SP
     waitForMove:
-    ldx #60000
+    ldx #10000
     dbne X, *
     dbne B, waitForMove
-    brset PTP, #%10000000, *
-    brset PTP, #%00100000, *
-    clr PWME
+    waitForLow:
+    brclr PTP, #%10100000, continue
+    bra waitForLow
+    continue:
+    ;bset PWMCTL, #%00001100
+     bclr DDRP, #%1010000
+     clr PWME
     rts

@@ -3,7 +3,7 @@
 #include "AsmFunctions.h"
 #define bit(x) (1<<x)
 #define SMPL 20
-#define REFRESHRATE 100
+#define REFRESHRATE 500
 #define THRESHOLD 15
 
 unsigned int abs(int);
@@ -17,30 +17,27 @@ char segDigits[4]= {0, 0, 0, 0};
 void main(void) {
    int lastRange =  0;
    int direction = 0;
-   int size = 50;
-
-//  SCI1BDH = 0;
-//  SCI1BDL = 0x9C;
-//  SCI1CR1 = 0;
-//  SCI1CR2 = 0b00001000;
+   int size = 20;
 
     initSevenSeg(REFRESHRATE);
     initServos(2500);
-    lastRange = getRange(SMPL)/SMPL;
+    // lastRange = getRange(SMPL)/SMPL;
     asm cli;
 
     while(1){//Main loop
-      int range = getRange(SMPL)/SMPL;
-      int dif = abs(range - lastRange);
-      lastRange = range;
-       delay(100);
-       if(dif > THRESHOLD){
-          direction += 5;
-          stepServo(size, direction%8);
-       }
+      // int range = getRange(SMPL)/SMPL;
+      // int dif = abs(range - lastRange);
+      // lastRange = range;
+       // delay(100);
+       // if(dif > THRESHOLD){
+       //    direction += 5;
+       //    stepServo(size, direction%8);
+       // }
                                      //If no edge detected
+
        stepServo(size, direction%8);
        direction++;
+       intToPrint(getRange(20)/20);
     }
 }
 
@@ -57,10 +54,12 @@ unsigned int abs(int num){
 //Initiates seven segment display
 void initSevenSeg(int refreshRate){
   TIE    |= 0b00000100;
-  TIOS   |= 0b00000100;
+  TIOS |= 0b00000100;
+  TSCR1  = 0x90;
   DDRB    = 0xff;
   DDRP   |= 0x0f;
   TC2 = TCNT + refreshRate;
+  intToPrint(0);
 }
 
 //Converts a 4 digit interger into 4 characters for the seven seg to print
