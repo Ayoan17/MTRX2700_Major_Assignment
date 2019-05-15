@@ -6,7 +6,7 @@
 
  getRange:
 
-  pshd     ;Push the sample number to the stack
+  pshb     ;Push the sample number to the stack
   ldd #0   ;Push 0 to the stack, this will be used
   pshd     ;To hold the sum of samples
 
@@ -19,7 +19,7 @@
   bclr TIOS,  #%00000010 ;Set TC1 to input compare
   bset TCTL4, #%00001100 ;Trigger on change of PT1's state
 
-  movb #%00000011, TSCR2; Timer prescaler 4  3m = 3ms = 3*24000 = 72000
+  movb #%00000100, TSCR2; Timer prescaler 16  3m = 3ms = 3*24000 = 72000
                         ; So prescaler > 2 should work but as we are taking
                         ; multiple readings a greater scaler will stop overflow
   movb #%10010000, TSCR1; Start timer in quick flag reset
@@ -45,7 +45,7 @@
   dey          ;Decrement y and if Y == 0 then we will add the sample to the
   bne rePoll   ;sample sum in the stack
 
-  ldx #30      ;Devide by 30 to get into cm
+  ldx #15      ;Devide by 30 to get into cm
   idiv
   pshx         ;Push the result to the stack
   puld         ;Pull the result into D ... D = X = sampleLength/30
@@ -54,7 +54,8 @@
   pshd         ;Push the new sample sum
 
   ldy #2       ;y = 2 to get every second value
-  dec [2, SP] ;Decreament the sample sum
+  dec 2, SP    ;Decreament the sample sum
   bne rePoll   ;If all samples have been taken
   puld         ;Load d with the sample sum and return
+  ins
   rts
