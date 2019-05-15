@@ -20,7 +20,7 @@ void main(void) {
    int direction = 0;
    int size = 50;
 
-// SCI1BDH = 0;
+//  SCI1BDH = 0;
 //  SCI1BDL = 0x9C;
 //  SCI1CR1 = 0;
 //  SCI1CR2 = 0b00001000;
@@ -66,7 +66,7 @@ void initSevenSeg(int refreshRate){
   TIOS   |= 0b00000100;
   DDRB    = 0xff;
   DDRP   |= 0x0f;
-  TC2 = TCNT + speed;
+  TC2 = TCNT + refreshRate;
 }
 
 //Converts a 4 digit interger into 4 characters for the seven seg to print
