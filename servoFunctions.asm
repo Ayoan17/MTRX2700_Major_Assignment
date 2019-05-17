@@ -22,7 +22,7 @@
     dbne X, *
     dbne Y, loop30
     bclr DDRP, #%1010000
-    clr PWME
+
     rts
 
 
@@ -72,11 +72,9 @@
     ldd PWMDTY45
     subd 3, SP
     std PWMDTY45
+    
     return:
     pula
-   ;bclr PWMCTL, #%00001100
-    movb #%10100000, PWME              ;Enable Chanels 7-4
-    bset DDRP, #%1010000
     ldd 2, SP
     waitForMove:
     ldx #10000
@@ -86,7 +84,4 @@
     brclr PTP, #%10100000, continue
     bra waitForLow
     continue:
-    ;bset PWMCTL, #%00001100
-     bclr DDRP, #%1010000
-     clr PWME
     rts
